@@ -37,7 +37,9 @@ namespace Preact_Api_Consumer
                             Name = accountNameTextbox.Text,
                             Id = accountIdTextbox.Text,
                             LicenseType = "paying",
-                            LicenseRenewal = DateTime.UtcNow
+                            LicenseRenewal = DateTime.UtcNow,
+                            LicenseCount = 100,
+                            Properties = new Dictionary<string, object> {{"Number of Running Initiatives",100}}
                         },
                         Event = new Preact.ActionEvent()
                         {
@@ -77,12 +79,16 @@ namespace Preact_Api_Consumer
             Preact.Api api = new Preact.Api(codeTextbox.Text, secretTextbox.Text);
 
             try {
+                var month = 1;
+                var day = 1;
+                var timeSpan = DateTime.UtcNow.AddDays(-3) - new DateTime(1970, month, day);
+
                 Preact.BackgroundSignalRequest request = new Preact.BackgroundSignalRequest()
                     {
                         AccountId = accountIdTextbox.Text,
                         Name = signalNameTextbox.Text,
                         Value = int.Parse(signalValueTextbox.Text),
-                        Timestamp = (DateTime.UtcNow - new DateTime(1970, new Random().Next(1, 3), new Random().Next(1, 30))).TotalSeconds
+                        Timestamp = timeSpan.TotalSeconds
                     };
                 outputTextbox.AppendText(JsonConvert.SerializeObject(request, Formatting.Indented) + "\n");
                 api.LogBackgroundSignal(request);

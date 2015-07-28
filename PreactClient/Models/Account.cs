@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Preact
@@ -47,5 +48,8 @@ namespace Preact
 
         [JsonProperty(PropertyName = "account_manager_email")]
         public string AccountManagerEmail { get; set; }
+
+        [JsonProperty(PropertyName = "properties")]
+        public Dictionary<string, object> Properties { get; set; }
     }
 }
