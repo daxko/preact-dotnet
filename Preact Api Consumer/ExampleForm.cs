@@ -34,31 +34,8 @@ namespace Preact_Api_Consumer
                     {
                         Account = new Preact.Account()
                         {
-                            Name = accountNameTextbox.Text,
                             Id = accountIdTextbox.Text,
-                            LicenseType = "paying",
-                            LicenseRenewal = DateTime.UtcNow,
-                            LicenseCount = 100,
-                            Properties = new Dictionary<string, object> {{"Number of Running Initiatives",100}}
-                        },
-                        Event = new Preact.ActionEvent()
-                        {
-                            Name = eventNameTextbox.Text,
-                            Revenue = 99
-                        },
-                        Person = new Preact.Person()
-                        {
-                            Email = emailTextbox.Text,
-                            Name = personNameTextbox.Text,
-                            Uid = uidTextbox.Text,
-                            CreatedAt = DateTime.Now,
-                            Properties = new Dictionary<string, object>() 
-                                {
-                                   {"created_at", (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds},
-                                   {"is_paying", true},
-                                   {"account_level", 2},
-                                   {"account_level_name", "Pro"}
-                                }
+                            Properties = new Dictionary<string, object> {{"Number of Running Initiatives",1000}}
                         }
                     };
                 outputTextbox.AppendText(JsonConvert.SerializeObject(request,Formatting.Indented) + "\n");
