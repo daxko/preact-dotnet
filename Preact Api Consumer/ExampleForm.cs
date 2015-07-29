@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using Preact;
 
 namespace Preact_Api_Consumer
 {
@@ -35,8 +36,13 @@ namespace Preact_Api_Consumer
                         Account = new Preact.Account()
                         {
                             Id = accountIdTextbox.Text,
-                            Properties = new Dictionary<string, object> {{"Number of Running Initiatives",1000}}
-                        }
+							Name = accountNameTextbox.Text,
+                            Properties = new Dictionary<string, object> {{"Lifetime Sent Emails",1000}}
+                        },
+						Event = new ActionEvent
+						{
+							Name = eventNameTextbox.Text
+						}
                     };
                 outputTextbox.AppendText(JsonConvert.SerializeObject(request,Formatting.Indented) + "\n");
                 api.LogEvent(request);
