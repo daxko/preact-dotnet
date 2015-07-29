@@ -53,6 +53,12 @@ namespace Preact
             return encoding.GetBytes(postData);
         }
 
+		private static byte[] EncodePostData(string jsonRequestPayload)
+		{
+			ASCIIEncoding encoding = new ASCIIEncoding();
+			return encoding.GetBytes(jsonRequestPayload);
+		}
+
         public static List<KeyValuePair<string, string>> BuildFormData(JObject obj, string parent = null)
         {
             List<KeyValuePair<string, string>> items = new List<KeyValuePair<string, string>>();
@@ -107,13 +113,13 @@ namespace Preact
 
         public static void SendData(string projectCode, string projectApiSecret, string url, string method, JObject obj)
         {
-            SendData(projectCode, projectApiSecret, url, method, BuildFormData(obj));
+			SendData(projectCode, projectApiSecret, url, method, BuildFormData(obj), JsonConvert.SerializeObject(obj));
         }
 
         // POST or PUT or something
-        public static void SendData(string projectCode, string projectApiSecret, string url, string method, List<KeyValuePair<string, string>> items)
+        public static void SendData(string projectCode, string projectApiSecret, string url, string method, List<KeyValuePair<string, string>> items, string jsonRequestPayload)
         {
-            new ApiLogger(projectCode, projectApiSecret, url, method, items);
+            new ApiLogger(projectCode, projectApiSecret, url, method, items, jsonRequestPayload);
         }
 
         private class ApiLogger
@@ -123,8 +129,9 @@ namespace Preact
             public string Code { get; set; }
             public string Secret { get; set; }
             public List<KeyValuePair<string, string>> Items { get; set; }
+	        public string JsonRequestPayload { get; set; }
 
-            private HttpWebRequest req;
+	        private HttpWebRequest req;
 
             const int DefaultTimeout = 10 * 1000; // 10 second timeout 
 
@@ -141,12 +148,13 @@ namespace Preact
                 }
             }
 
-            public ApiLogger(string projectCode, string projectApiSecret, string url, string method, List<KeyValuePair<string, string>> items)
+            public ApiLogger(string projectCode, string projectApiSecret, string url, string method, List<KeyValuePair<string, string>> items, string jsonRequestPayload)
             {
                 Url = url;
                 Method = method;
                 Items = items;
-                Code = projectCode;
+	            JsonRequestPayload = jsonRequestPayload;
+	            Code = projectCode;
                 Secret = projectApiSecret;
                 Send();
             }
@@ -156,8 +164,8 @@ namespace Preact
                 req = (HttpWebRequest)WebRequest.Create(this.Url);
                 req.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(Code + ":" + Secret));
                 req.Method = this.Method;
-                req.ContentType = "application/x-www-form-urlencoded";
-                req.Accept = "text/javascript";
+				req.Accept = "application/json";
+				req.ContentType = "application/json";
                 req.UserAgent = UserAgent;
                 var asyncResult = req.BeginGetRequestStream(this.RequestCallback, req);
 
@@ -169,7 +177,7 @@ namespace Preact
             {
                 try
                 {
-                    var data = GetPostData(Items);
+                    var data = EncodePostData(JsonRequestPayload);
 
                     Stream newStream = req.EndGetRequestStream(asyncResult);
                     newStream.Write(data, 0, data.Length);
@@ -184,7 +192,7 @@ namespace Preact
                 }
             }
 
-            private void ResponseCallback(IAsyncResult asyncResult)
+	        private void ResponseCallback(IAsyncResult asyncResult)
             {
                 try
                 {
