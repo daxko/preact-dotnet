@@ -180,6 +180,7 @@ namespace Preact
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+					throw;
                 }
             }
 
@@ -193,6 +194,7 @@ namespace Preact
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+	                throw;
                 }
                 finally { }
             }
